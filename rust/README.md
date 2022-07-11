@@ -9,5 +9,6 @@
     <li>1) IP sniffer</li>
     <li>2) Snake game</li>
     <li>3) CLI Chat</li>
-    <li></li>
- </ul>
+    <li>Toy blockchain</li>
+    <li>Iron framework webAPI</li>
+</ul>

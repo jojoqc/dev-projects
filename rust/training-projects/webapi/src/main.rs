@@ -1,27 +1,19 @@
-
-extern crate chrono;
-extern crate env_logger;
-extern crate iron;
-extern crate logger;
-extern crate router;
-extern crate rustc_serialize;
-extern crate uuid;
-mod models;
 mod database;
-mod handler;
-use model::*;
-use database::Database;
-use handler::*;
+mod handlers;
+mod models;
 
+use database::Database;
+use handlers::*;
+use models::*;
 
 use iron::prelude::Chain;
 use iron::Iron;
-use router::Router;
 use logger::Logger;
+use router::Router;
 use uuid::Uuid;
 
 fn main(){
-    env_logger::init().unwrap();
+    env_logger::init();
     let (logger_before, logger_after) = Logger::new(None);
     let mut db = Database::new();
 
@@ -29,17 +21,17 @@ fn main(){
         "data 1",
         "data 2",
         "data 3",
-        chrono::offset::utc::UTC::now(),
+        chrono::offset::Utc::now(),
         Uuid::new_v4(),
     );
-    db.add_post(p);
+    db.add_posts(p);
 
     let device_one = Device::new(
         "Serial 1234",
         "Model 1234",
         "SoftwareVersion 1234",
         "Vendor 1234",
-        chrono::offset::utc::UTC::now(),
+        chrono::offset::Utc::now(),
         Uuid::new_v4(),
     );
     db.add_devices(device_one);

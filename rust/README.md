@@ -11,4 +11,5 @@
     <li>3) CLI Chat</li>
     <li>4) Toy blockchain</li>
     <li>5) Iron framework webAPI</li>
+    <li>6) Rust gRPC demo</li>
 </ul>

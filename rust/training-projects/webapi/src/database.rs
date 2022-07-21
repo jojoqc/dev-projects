@@ -1,18 +1,32 @@
-use crate::models::Post;
 use crate::models::Device;
+use crate::models::Post;
 
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug)]
 pub struct Database {
-    posts: Vec<Post>
+    posts: Vec<Post>,
+    devices: Vec<Device>,
 }
 
-impl Database{
-    fn new()->Database{ Database{posts:vec![]} }
+impl Database {
+    pub fn new() -> Database {
+        Database {
+            posts: vec![],
+            devices: vec![],
+        }
+    }
 
-    pub fn add_posts(&mut self, post:Post){ self.posts.push(post); }
-    pub fn posts(&self)->&Vec<Post>{ &self.posts() }
+    pub fn add_posts(&mut self, post: Post) {
+        self.posts.push(post);
+    }
+    pub fn posts(&self) -> &Vec<Post> {
+        &self.posts
+    }
 
-    pub fn add_devices(&mut self, device:Device){ self.devices().push(device)}
+    pub fn add_devices(&mut self, device: Device) {
+        self.devices.push(device);
+    }
 
-    pub fn devices(&self)->&Vec<Device>{ &self.devices() }
+    pub fn devices(&self) -> &Vec<Device> {
+        &self.devices()
+    }
 }

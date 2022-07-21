@@ -7,16 +7,22 @@ pub struct Post {
     title: String,
     body: String,
     author: String,
-    datetime: DateTime<Utc>,
+    _datetime: DateTime<Utc>,
     uuid: Uuid,
 }
 impl Post {
-    pub fn new(title: &str, body: &str, author: &str, datetime: DateTime<Utc>, uuid: Uuid) -> Post {
+    pub fn new(
+        title: &str,
+        body: &str,
+        author: &str,
+        _datetime: DateTime<Utc>,
+        uuid: Uuid,
+    ) -> Post {
         Post {
             title: title.to_string(),
             body: body.to_string(),
             author: author.to_string(),
-            datetime: Utc::now(),
+            _datetime: Utc::now(),
             uuid,
         }
     }
@@ -32,7 +38,7 @@ pub struct Config {
     sshkey: String,
     port: String,
     port_forward: String,
-    datetime: DateTime<Utc>,
+    _datetime: DateTime<Utc>,
     uuid: Uuid,
 }
 impl Config {
@@ -42,7 +48,7 @@ impl Config {
         sshkey: &str,
         port: &str,
         port_forward: &str,
-        datetime: DateTime<Utc>,
+        _datetime: DateTime<Utc>,
         uuid: Uuid,
     ) -> Config {
         Config {
@@ -51,7 +57,7 @@ impl Config {
             sshkey: sshkey.to_string(),
             port: port.to_string(),
             port_forward: port_forward.to_string(),
-            datetime: Utc::now(),
+            _datetime: Utc::now(),
             uuid,
         }
     }
@@ -66,7 +72,7 @@ pub struct Device {
     model: String,
     software_version: String,
     vendor: String,
-    datetime: DateTime<Utc>,
+    _datetime: DateTime<Utc>,
     uuid: Uuid,
 }
 impl Device {
@@ -75,7 +81,7 @@ impl Device {
         model: &str,
         software_version: &str,
         vendor: &str,
-        datetime: DateTime<Utc>,
+        _datetime: DateTime<Utc>,
         uuid: Uuid,
     ) -> Device {
         Device {
@@ -83,7 +89,7 @@ impl Device {
             model: model.to_string(),
             software_version: software_version.to_string(),
             vendor: vendor.to_string(),
-            datetime: Utc::now(),
+            _datetime: Utc::now(),
             uuid,
         }
     }

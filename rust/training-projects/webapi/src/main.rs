@@ -12,7 +12,7 @@ use logger::Logger;
 use router::Router;
 use uuid::Uuid;
 
-fn main(){
+fn main() {
     env_logger::init();
     let (logger_before, logger_after) = Logger::new(None);
     let mut db = Database::new();
@@ -40,7 +40,7 @@ fn main(){
     let json_content_middleware = JsonAfterMiddleware;
 
     let mut router = Router::new();
-    router.get("/post_feed", handlers.post_feed ,"post_feed");
+    router.get("/post_feed", handlers.post_feed, "post_feed");
     router.post("/post", handlers.post_post, "post_post");
     router.get("/post/:id", handlers.post, "post");
 
@@ -49,7 +49,5 @@ fn main(){
     chain.link_after(json_content_middleware);
     chain.link_after(logger_after);
 
-
-
-    Iron::new(chain).http("localhost:8000").unwrap();
+    Iron::new(chain).http("localhost:8811").unwrap();
 }

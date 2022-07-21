@@ -3,13 +3,12 @@ use crate::models::Post;
 use iron::headers::ContentType;
 use iron::{status, AfterMiddleware, Handler, IronResult, Request, Response};
 use router::Router;
-use std::error::Error;
 use std::io::Read;
 use std::sync::{Arc, Mutex};
 use uuid::Uuid;
 
 macro_rules! try_handler {
-    ($e: expr) => {
+    ($e:expr) => {
         match $e {
             Ok(x) => x,
             Err(e) => return Ok(Response::with((status::InternalServerError, e.to_string()))),
@@ -22,20 +21,21 @@ macro_rules! try_handler {
         }
     };
 }
+
 macro_rules! lock {
     ($e:expr) => {
-        e.lock().unwrap()
+        $e.lock().unwrap()
     };
 }
 macro_rules! get_http_param {
     ($r:expr,$e:expr) => {
-        match $r.extensions.get::<Router>(){
-            Some(router)=>match router.find($e){
-                Some(v)=>v,
-                None=>return Ok(Response::with(status::BadRequest)),
-            }
+        match $r.extensions.get::<Router>() {
+            Some(router) => match router.find($e) {
+                Some(v) => v,
+                None => return Ok(Response::with(status::BadRequest)),
+            },
+            None => return Ok(Response::with(status::InternalServerError)),
         }
-        None => return Ok(Response::with(status::InternalServerError))
     };
 }
 
@@ -65,7 +65,7 @@ impl PostFeedHandler {
 }
 impl Handler for PostFeedHandler {
     fn handle(&self, _: &mut Request) -> IronResult<Response> {
-        let payload = try_handler!(serde_json::to_string(lock!(self.database).post()));
+        let payload = try_handler!(serde_json::to_string(lock!(self.database).posts()));
         Ok(Response::with((status::Ok, payload)))
     }
 }
@@ -82,10 +82,8 @@ impl Handler for PostPostHandler {
     fn handle(&self, req: &mut Request) -> IronResult<Response> {
         let mut payload = String::new();
         try_handler!(req.body.read_to_string(&mut payload));
-
         let post = try_handler!(serde_json::from_str(payload.as_str()), status::BadRequest);
-
-        lock!(self.database).add_post(post);
+        lock!(self.database).add_posts(post);
         Ok(Response::with((status::Created, payload)))
     }
 }
@@ -106,9 +104,7 @@ impl PostHandler {
 impl Handler for PostHandler {
     fn handle(&self, req: &mut Request) -> IronResult<Response> {
         let ref post_id = get_http_param!(req, "id");
-
         let id = try_handler!(Uuid::parse_str(post_id), status::BadRequest);
-
         if let Some(post) = self.find_post(&id) {
             let payload = try_handler!(serde_json::to_string(&post), status::InternalServerError);
             Ok(Response::with((status::Ok, payload)))
@@ -122,6 +118,6 @@ pub struct JsonAfterMiddleware;
 impl AfterMiddleware for JsonAfterMiddleware {
     fn after(&self, _: &mut Request, mut res: Response) -> IronResult<Response> {
         res.headers.set(ContentType::json());
-        Ok(res);
+        Ok(res)
     }
 }

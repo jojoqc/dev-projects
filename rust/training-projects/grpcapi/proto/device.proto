@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package deviceconfig;
+
+// The device service definition.
+service Deviceproto {
+  // Retrieve a book
+  rpc GetDevice(GetDeviceRequest) returns (GetDeviceResponse) {}
+}
+
+// The request with an id of the book
+message GetDeviceRequest {
+  string id = 1;
+}
+
+// The response details of a book
+message GetDeviceResponse {
+  string id     = 1;
+  string name   = 2;
+  string author = 3;
+  int32 year    = 4;
+}

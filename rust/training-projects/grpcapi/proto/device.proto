@@ -4,16 +4,16 @@ package deviceconfig;
 
 // The device service definition.
 service Deviceproto {
-  // Retrieve a book
+  // Retrieve a Device
   rpc GetDevice(GetDeviceRequest) returns (GetDeviceResponse) {}
 }
 
-// The request with an id of the book
+// The request with an id of the Device
 message GetDeviceRequest {
   string id = 1;
 }
 
-// The response details of a book
+// The response details of a Device
 message GetDeviceResponse {
   string id     = 1;
   string name   = 2;

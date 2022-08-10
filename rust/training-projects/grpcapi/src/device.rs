@@ -15,6 +15,19 @@ pub struct GetDeviceResponse {
     pub author: ::prost::alloc::string::String,
     #[prost(int32, tag = "4")]
     pub year: i32,
+    // #[prost(string, tag = "5")]
+    // pub ip_server: ::prost::alloc::string::String,
+    // #[prost(string, tag = "6")]
+    // pub port_server: ::prost::alloc::string::String,
+    // #[prost(string, tag = "7")]
+    // pub sshkey: ::prost::alloc::string::String,
+    // #[prost(string, tag = "8")]
+    // pub user: ::prost::alloc::string::String,
+    //
+    // #[prost(string, tag = "9")]
+    // pub port_forward: ::prost::alloc::string::String,
+    // #[prost(string, tag = "10")]
+    // pub port_com: vec![::prost::alloc::string::String],
 }
 
 /// Generated client implementations.

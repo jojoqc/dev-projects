@@ -1,8 +1,11 @@
-use chrono::{DateTime,NaiveDate,Utc};
+use chrono::{DateTime,Utc};
+use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Clone, Deserialize,Serialize)]
 pub struct StructCustomData{
     random:u32,
 }
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct StructDevice {
     id: uuid::Uuid,
     name:String,

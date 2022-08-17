@@ -1,24 +1,23 @@
-use crate::api; 
-
+use crate::api::device::StructDevice;
 pub trait Repository {
     fn get_(&self, id: uuid::Uuid)->Result<StructDevice, String>;
 }
 
 pub struct MemoryRepository{
-    data:Vec<StructDevice>,
+    device:Vec<StructDevice>,
 }
 
 impl Default for MemoryRepository {
     fn default() -> Self{
         Self{
-           data: vec![ImplDevice::new("dispositivo 1",001)] 
+            device: vec![StructDevice::new("dispositivo 1".to_string(),001)] 
         }
     }
 }
 
 impl Repository for MemoryRepository {
     fn get_(&self, id: uuid::Uuid)->Result<StructDevice, String>{
-        self.StructDevice
+        self.device
             .iter()
             .find(|u| u.id == id)
             //.map(|u| u.clone())

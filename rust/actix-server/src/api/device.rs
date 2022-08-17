@@ -1,18 +1,17 @@
 use chrono::{DateTime,Utc};
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Deserialize,Serialize)]
+use serde::{Serialize, Deserialize};
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct StructCustomData{
     random:u32,
 }
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct StructDevice {
-    id: uuid::Uuid,
-    name:String,
-    serial:u32,
-    custom_data:StructCustomData,
-    created_at:Option<DateTime<Utc>>,
-    updated_at:Option<DateTime<Utc>>,
+    pub id: uuid::Uuid,
+    pub name:String,
+    pub serial:u32,
+    pub custom_data:StructCustomData,
+    pub created_at:Option<DateTime<Utc>>,
+    pub updated_at:Option<DateTime<Utc>>,
 }
 
 impl StructDevice{

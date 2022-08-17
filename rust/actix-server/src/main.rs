@@ -1,28 +1,25 @@
-mod utils;
-mod api; 
+use actix_server::utils::repository::Repository;
+use actix_server::utils::repository::MemoryRepository;
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use std::sync::{atomic::{AtomicU16,Ordering},Arc};
-
 async fn greet(name: web::Path<String>) -> impl Responder {
-    format!("Hello {name}!");
+    format!("Hello {name}!")
 }
 
-async fn get_device(req: HttpRequest) -> impl HttpResponse {
-    if let Some(device_id) = req.match_info().get("id"){
-        let parsed_device_id = uuid::Uuid::from_slice(id);
-        match parsed_device_id {
+async fn get_device(req: HttpRequest) -> HttpResponse {
+    if let Some(id) = req.match_info().get("id"){
+        match uuid::Uuid::parse_str(id) {
             Ok(parsed_device_id) =>{
                 let repo = MemoryRepository::default();
-                let device = repo.get_(id);
-                match device {
+                match repo.get_(parsed_device_id) {
                     Ok(device) => HttpResponse::Ok().json(device),
-                    Err(_) => HttpResponse::InternalServerError().body("Error en la peticion.")
-                };
+                    Err(_) => HttpResponse::NotFound().body("Error en la peticion.")
+                }
             }
-            Err(_)=> HttpBadRequest().body("Fallo en la peticion")
-        };
+            Err(_)=> HttpResponse::BadRequest().body("Fallo en la peticion")
+        }
     } else{
-        HttpResponse::NotFound().body("Not found");
+        HttpResponse::NotFound().body("Not found")
     }
 }
 

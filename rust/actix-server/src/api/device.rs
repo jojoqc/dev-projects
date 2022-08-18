@@ -16,8 +16,10 @@ pub struct StructDevice {
 
 impl StructDevice{
     pub fn new(name: String, serial: u32) -> Self {
+        let _id = uuid::Uuid::parse_str("659e6c8b-e65e-48b7-93a4-46c57cf7318a").unwrap();
         Self {
-            id: uuid::Uuid::new_v4(),
+            //id: uuid::Uuid::new_v4(),
+            id:_id,
             name,
             serial,
             custom_data: StructCustomData{random: 1},

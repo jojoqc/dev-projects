@@ -1,6 +1,6 @@
 use crate::api::device::StructDevice;
 pub trait Repository {
-    fn get_(&self, id: uuid::Uuid)->Result<StructDevice, String>;
+    fn get_(&self, id: &uuid::Uuid)->Result<StructDevice, String>;
 }
 
 pub struct MemoryRepository{
@@ -16,12 +16,10 @@ impl Default for MemoryRepository {
 }
 
 impl Repository for MemoryRepository {
-    fn get_(&self, id: uuid::Uuid)->Result<StructDevice, String>{
+    fn get_(&self, id: &uuid::Uuid)->Result<StructDevice, String>{
         self.device
             .iter()
-            .find(|u| u.id == id)
-            //.map(|u| u.clone())
-            //.ok_or_else(|e| e.to_string())
+            .find(|u| &u.id == id)
             .ok_or_else(|| "Invalid UUID".to_string())
             .cloned()
     }

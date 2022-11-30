@@ -15,6 +15,6 @@
     <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/7-rusty-blas">7) Rust BLAS library </a></li>
     <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/6-opengl-rust">8) Snake game</a></li>
     <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/9-webapi">9) Iron framework webAPI</a></li>
-    <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/10-bevy">10) Bevy practice</a></li>
+    <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/10-bevy-game">10) Bevy practice</a></li>
     
 </ul>

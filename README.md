@@ -1,2 +1,2 @@
-# hack-tricks-learning
-Learning about new languages some scripts &amp; Hacks to make things easier
+# Learning journey
+Learning about new languages some scripts &amp; hacks to make things easier

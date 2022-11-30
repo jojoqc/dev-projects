@@ -6,13 +6,15 @@
 
 <p>The list of training projects:</p>
  <ul>
-    <li><a href="">1) Actix-server</a></li>
-    <li><a href="">2) Toy blockchain</a></li>
-    <li><a href="">3) CLI Chat </a></li>
-    <li><a href="">4) Rust gRPC demo</a></li>
-    <li><a href="">5) IP sniffer</a></li>
-    <li><a href="">6) Opengl-rust </a></li>
-    <li><a href="">7) Rust BLAS library </a></li>
-    <li><a href="">8) Snake game</a></li>
-    <li><a href="">9) Iron framework webAPI</a></li>
+    <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/1-actix-server">1) Actix-server</a></li>
+    <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/2-block-chain">2) Toy blockchain</a></li>
+    <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/3-chat">3) CLI Chat </a></li>
+    <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/4-grpcapi">4) Rust gRPC demo</a></li>
+    <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/5-ipsniffer">5) IP sniffer</a></li>
+    <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/6-opengl-rust">6) Opengl-rust computer graphics</a></li>
+    <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/7-rusty-blas">7) Rust BLAS library </a></li>
+    <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/6-opengl-rust">8) Snake game</a></li>
+    <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/9-webapi">9) Iron framework webAPI</a></li>
+    <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/10-bevy">10) Bevy practice</a></li>
+    
 </ul>

@@ -1,54 +1,50 @@
 use bevy::prelude::*;
-//use bevy::input::InputPlugin;
+//bevy::prelude::Handle;
 
-#[derive(Component)]
-struct Position { x: f32, y: f32 }
-#[derive(Component)]
-struct Person;
-#[derive(Component)]
-struct Name(String);
 
-pub struct HelloPlugin;
-
-impl Plugin for HelloPlugin{
-    fn build(&self, app: &mut App){
-        println!("{:?}",3+3);
-        app.insert_resource(GreetTimer(Timer::from_seconds(2.0, TimerMode::Repeating)))
-        .add_startup_system(add_people)
-        .add_system(greet_people);
-    }
-}
-
-fn print_position_system(query: Query<&Transform>) {
-    for transform in query.iter() {
-        println!("position: {:?}", transform.translation);
-    }
-}
-
-fn hello_world() {
-    println!("hello world!");
-}
-
-fn add_people(mut commands: Commands) {
-    commands.spawn((Person, Name("Elaina Proctor".to_string())));
-    commands.spawn((Person, Name("Renzo Hume".to_string())));
-    commands.spawn((Person, Name("Zayna Nieves".to_string())));
-}
-
-#[derive(Resource)]
-struct GreetTimer(Timer);
-
-fn greet_people(time:Res<Time>, mut timer:ResMut<GreetTimer>, query: Query<&Name, With<Person>>) {
-    if timer.0.tick(time.delta()).just_finished(){
-        for name in query.iter() {
-            println!("hello {}!", name.0);
-        }
-    }
-}
+pub const HEIGHT: f32 = 720.0;
+pub const WIDTH:  f32 = 1280.0;
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
-        .add_plugin(HelloPlugin)
-        .run();
+        .insert_resource(ClearColor(Color::rgb(0.2,0.2,0.2)))
+        .add_startup_system(spawn_basic_scene)
+        .add_startup_system(spawn_camera)
+        .add_plugins(DefaultPlugins.set(WindowPlugin{
+            window: WindowDescriptor{
+                width: WIDTH,
+                height: HEIGHT,
+                title: "Magic paradise".to_string(),
+                resizable: false,
+                ..Default::default()
+            },
+            ..default()
+        }))
+    .run();
+}
+
+fn spawn_basic_scene(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+){
+    commands.spawn(PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Plane{size: 5.0})),
+        material: materials.add(Color::rgb(0.3,0.5,0.3).into()),
+        ..default()
+    });
+    
+    commands.spawn(PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Plane{size: 1.0})),
+        material: materials.add(Color::rgb(0.67,0.84,0.92).into()),
+        transform: Transform::from_xyz(0.0,0.5,0.0),
+        ..default()
+    });
+}
+
+fn spawn_camera(mut commands: Commands){
+    commands.spawn(Camera3dBundle{
+        transform: Transform::from_xyz(-2.0,2.5,5.0).looking_at(Vec3::ZERO,Vec3::Y),
+        ..default()
+    });
 }

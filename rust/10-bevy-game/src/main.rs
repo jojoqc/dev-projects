@@ -1,21 +1,20 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, utils::FloatOrd};
 use bevy_inspector_egui::WorldInspectorPlugin;
-use std::f32::consts::PI;
 
 pub const HEIGHT: f32 = 720.0;
 pub const WIDTH:  f32 = 1280.0;
 
-
-#[derive(Reflect, Component, Default)]
-#[reflect(Component)]
-pub struct Tower{ shooting_timer: Timer,}
-
-#[derive(Reflect, Component, Default)]
-#[reflect(Component)]
-pub struct Lifetime{ timer: Timer, }
-
 #[derive(Resource)]
 pub struct GameAssets{ bullet_scene: Handle<Scene>, }
+
+mod bullet;
+mod target;
+mod tower;
+
+pub use bullet::*;
+pub use target::*;
+pub use tower::*;
+
 
 
 fn main() {
@@ -34,14 +33,13 @@ fn main() {
         }))
         // Inspector Setup
         .add_plugin(WorldInspectorPlugin::new())
-        .register_type::<Tower>()
-        .register_type::<Lifetime>()
         // Our Systems
+        .add_plugin(TowerPlugin)
+        .add_plugin(TargetPlugin)
+        .add_plugin(BulletPlugin)
         .add_startup_system(spawn_basic_scene)
         .add_startup_system(spawn_camera)
         .add_startup_system(asset_loading)
-        .add_system(tower_shooting)
-        .add_system(bullet_despawn)
         .run();
 }
 
@@ -51,48 +49,12 @@ fn asset_loading(mut commands: Commands, assets: Res<AssetServer>){
     });
 }
 
-fn bullet_despawn(
-    mut commands: Commands,
-    mut bullets: Query<(Entity, &mut Lifetime)>,
-    time:Res<Time>,
-){
-    for (entity, mut lifetime) in &mut bullets {
-        lifetime.timer.tick(time.delta());
-        if lifetime.timer.just_finished(){
-            commands.entity(entity).despawn_recursive();
-        }
-    }    
-}
-
-fn tower_shooting(
-    mut commands: Commands,
-    mut towers: Query<&mut Tower>,
-    bullets_assets: Res<GameAssets>,
-    time: Res<Time>,
-){
-    for mut tower in &mut towers{
-        tower.shooting_timer.tick(time.delta());
-        if tower.shooting_timer.just_finished(){
-            let spawn_transform = 
-                Transform::from_xyz(0.0,0.7,0.6).with_rotation(Quat::from_rotation_y(-PI/2.0));
-            commands.spawn(SceneBundle{
-                scene: bullets_assets.bullet_scene.clone(),
-                transform: spawn_transform,
-                ..Default::default()
-            })
-            .insert(Lifetime{
-                timer: Timer::from_seconds(0.5, TimerMode::Once),
-            })
-            .insert(Name::new("Bullet"));
-        }
-    }
-}
-
 fn spawn_basic_scene(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ){
+    //first
     commands.spawn(PbrBundle {
         mesh: meshes.add(Mesh::from(shape::Plane{size: 5.0})),
         material: materials.add(Color::rgb(0.3,0.5,0.3).into()),
@@ -100,6 +62,7 @@ fn spawn_basic_scene(
     })
     .insert(Name::new("Ground"));
     
+    //second
     commands.spawn(PbrBundle {
         mesh: meshes.add(Mesh::from(shape::Cube{size: 1.0})),
         material: materials.add(Color::rgb(0.67,0.84,0.92).into()),
@@ -108,9 +71,35 @@ fn spawn_basic_scene(
     })
     .insert(Tower{
         shooting_timer: Timer::from_seconds(1.0, TimerMode::Repeating),
+        bullet_offset: Vec3::new(0.0, 0.2, 0.5),
     })
     .insert(Name::new("Tower"));
+
+    //third
+    commands
+        .spawn(PbrBundle{
+            mesh: meshes.add(Mesh::from(shape::Cube{ size:0.4})),
+            material: materials.add(Color::rgb(0.67, 0.84, 0.92).into()),
+            transform: Transform::from_xyz(-2.0, 0.2, 1.5),
+            ..default()
+        })
+        .insert( Target{speed: 0.3})
+        .insert( Health{value: 3})
+        .insert( Name::new("Target"));
     
+    //fourth
+    commands
+        .spawn(PbrBundle{
+            mesh: meshes.add(Mesh::from(shape::Cube{size: 0.4})),
+            material: materials.add(Color::rgb(0.67, 0.84, 0.92).into()),
+            transform: Transform::from_xyz(-4.0, 0.2, 1.5),
+            ..default()
+        })
+        .insert(Target{speed: 0.3})
+        .insert(Health{value: 3})
+        .insert(Name::new("Target"));
+    
+    //fifth
     commands.spawn(PointLightBundle {
         point_light: PointLight{
             intensity: 1500.0,
@@ -121,8 +110,6 @@ fn spawn_basic_scene(
         ..default()
     })
     .insert(Name::new("Light"));
-    
-
 }
 
 fn spawn_camera(mut commands: Commands){

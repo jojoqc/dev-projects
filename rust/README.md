@@ -1,7 +1,7 @@
  <p>
  <h2>Getting started</h2> with <b>RUST</b> and making some projects
  to get used to the syntax, compiler, tools,
- standard library, and RUST enviroment in general.
+ standard library, and RUST environment in general.
  <p>
 
 <p>The list of training projects:</p>
@@ -16,5 +16,5 @@
     <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/6-opengl-rust">8) Snake game</a></li>
     <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/9-webapi">9) Iron framework webAPI</a></li>
     <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/10-bevy-game">10) Bevy practice</a></li>
-    
+    <li><a href="https://github.com/joasquintero/dev-projects/tree/main/rust/11-embedded-rust">11) Embedded rust</a></li>
 </ul>

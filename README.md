@@ -1,2 +1,2 @@
 # Learning journey
-Learning about new languages some scripts &amp; hacks to make things easier
+Learning about new languages, create some scripts & hacks to make things easier, and fiddle with technologies or concept that I find interesting

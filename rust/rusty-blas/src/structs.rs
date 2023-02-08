@@ -35,7 +35,7 @@ struct _setm{}
 struct _subm{}
 
 
-
+//BLAS LEVEL-1 SIMPLEX
 struct Asum{}//Sum of vector magnitudes
 struct Axpy{}//Scalar-vector product
 struct Copyv{}//Copy vector

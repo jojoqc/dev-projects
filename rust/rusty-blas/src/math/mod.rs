@@ -2,14 +2,14 @@ use std::ops::{
     BitXor,
     Deref,
 };
-use matrix::Matrix;
-use vector::Vector;
+use crate::matrix::Matrix;
+use crate::vector::Vector;
 
 pub use self::mat::Mat;
 
 pub mod mat;
 pub mod vector;
-pub mod matrx_vector;
+pub mod matrix_vector;
 pub mod matrix;
 
 pub enum Trans<A>{

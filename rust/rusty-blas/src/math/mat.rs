@@ -1,16 +1,16 @@
 #![macro_use]
 
+use crate::num::traits::NumCast;
+use crate::vector::ops::Copy;
+use crate::Matrix;
+use crate::Vector;
 use std::fmt;
 use std::iter::repeat;
 use std::ops::Index;
 use std::slice;
-use num::traits::NumCast;
-use Matrix;
-use Vector;
-use vector::ops::Copy;
 
 #[derive(Debug, PartialEq)]
-pub struct Mat<T>{
+pub struct Mat<T> {
     rows: usize,
     cols: usize,
     // change vector type data to SIMD or use LLVM intrinsics
@@ -18,25 +18,25 @@ pub struct Mat<T>{
 }
 
 impl<T> Mat<T> {
-    pub fn new(n: usize, m: usize) -> Mat<T>{
+    pub fn new(n: usize, m: usize) -> Mat<T> {
         let len = n * m;
         let mut data = Vec::with_capacity(len);
-        unsafe{
+        unsafe {
             data.set_len(len);
         }
 
-        Mat{
+        Mat {
             rows: n,
             cols: m,
             data: data,
         }
     }
 
-    pub fn rows(&self) -> usize{
+    pub fn rows(&self) -> usize {
         self.rows
     }
 
-    pub fn cols(&self) -> usize{
+    pub fn cols(&self) -> usize {
         self.cols
     }
 
@@ -48,14 +48,14 @@ impl<T> Mat<T> {
         self.cols = n;
     }
 
-    pub unsafe fn push(&mut self, val: T){
+    pub unsafe fn push(&mut self, val: T) {
         self.data.push(val)
     }
 }
 
-impl <T: Clone> Mat<T>{
-    pub fn fill(value: T, n:usize, m: usize) -> Mat<T>{
-        Mat{
+impl<T: Clone> Mat<T> {
+    pub fn fill(value: T, n: usize, m: usize) -> Mat<T> {
+        Mat {
             rows: n,
             cols: m,
             data: repeat(value).take(n * m).collect(),
@@ -63,10 +63,10 @@ impl <T: Clone> Mat<T>{
     }
 }
 
-impl<T> Index<usize> for Mat<T>{
+impl<T> Index<usize> for Mat<T> {
     type Output = [T];
 
-    fn index<'a>(&'a self, index: usize)->&'a[T]{
+    fn index<'a>(&'a self, index: usize) -> &'a [T] {
         let offset = (index * self.cols) as isize;
 
         unsafe {
@@ -76,17 +76,17 @@ impl<T> Index<usize> for Mat<T>{
     }
 }
 
-impl<T: fmt::Display> fmt::Display for Mat<T>{
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result{
-        for i in 0usize..self.rows{
-            for j in 0usize..self.cols{
-                match write!(f,"{}", self[i][j]){
-                    Ok(_) =>(),
+impl<T: fmt::Display> fmt::Display for Mat<T> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for i in 0usize..self.rows {
+            for j in 0usize..self.cols {
+                match write!(f, "{}", self[i][j]) {
+                    Ok(_) => (),
                     x => return x,
                 }
             }
-            match writeln!(f, ""){
-                Ok(_)=>(),
+            match writeln!(f, "") {
+                Ok(_) => (),
                 x => return x,
             }
         }
@@ -94,13 +94,13 @@ impl<T: fmt::Display> fmt::Display for Mat<T>{
     }
 }
 
-impl<T>Matrix<T> for Mat<T>{
-    fn rows(&self)-> i32 {
+impl<T> Matrix<T> for Mat<T> {
+    fn rows(&self) -> i32 {
         let n: Option<i32> = NumCast::from(self.rows);
-        n.unwrap() 
+        n.unwrap()
     }
 
-    fn cols(&self)-> i32 {
+    fn cols(&self) -> i32 {
         let n: Option<i32> = NumCast::from(self.cols);
         n.unwrap()
     }
@@ -109,25 +109,27 @@ impl<T>Matrix<T> for Mat<T>{
         self.data[..].as_ptr()
     }
 
-    fn as_ptr(&self) -> *mut T{
+    fn as_ptr(&self) -> *mut T {
         (&mut self.data[..]).as_mut_ptr()
     }
 }
 
-
-impl <'a, T> From<&'a Matrix<T>> for Mat<T> where T:Copy{
-    fn from(a: &Matrix<T>)-> Mat<T> {
+impl<'a, T> From<&'a Matrix<T>> for Mat<T>
+where
+    T: Copy,
+{
+    fn from(a: &Matrix<T>) -> Mat<T> {
         let n = a.rows() as usize;
         let m = a.cols() as usize;
         let len = n * m;
 
-        let mut result = Mut{
+        let mut result = Mat {
             rows: n,
             cols: m,
             // change vector type data to SIMD or use LLVM intrinsics
             data: Vec::with_capacity(len),
         };
-        unsafe{
+        unsafe {
             result.data.set_len(len);
         }
         Copy::copy_mat(a, &mut result);
@@ -170,7 +172,7 @@ mod tests {
         let a = mat![1f32, 2f32];
         assert_eq!(1.0, a[0[0]]);
         assert_eq!(2.0, a[0][1]);
-        
+
         let b = mat![1f32; 2f32];
         assert_eq!(1.0, b[0][0]);
         assert_eq!(2.0, b[1][0]);
@@ -180,8 +182,5 @@ mod tests {
         assert_eq!(2.0, m[0][1]);
         assert_eq!(3.0, m[1][0]);
         assert_eq!(4.0, m[1][1]);
-
     }
 }
-
-

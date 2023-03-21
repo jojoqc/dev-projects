@@ -2,13 +2,14 @@ use std::ops::{
     Add,
     Mul,
 };
+// use crate::Scale;
+// use crate::Axpy;
 use num::complex::{Complex32, Complex64};
-use attributes::Transpose;
-use default::Default;
-use math::Trans;
+use crate::attributes::Transpose;
+use crate::default::Default;
+use crate::math::{Trans,Mat};
 use matrix::ops::*;
-use matrix::Matrix;
-use math::Mat;
+use crate::matrix::Matrix;
 use vector::ops::*;
 
 impl<'a,T> Add for &'a Matrix<T> where T: Axpy + Copy + Default {
@@ -109,7 +110,7 @@ impl <'a, T> Mul <Trans<&'a Matrix<T>>> for &'a Matrix<T> where T: Default + Gem
 
         let n = self.rows() as usize;
         let m = b.rows() as usize;
-        let mut result = MAt::new(n,m);
+        let mut result = Mat::new(n,m);
         let at = Transpose::NoTrans;
 
         Gemm::gemm(&Default::one(), at, self, bt, b, &Default::zero(), &mut result);

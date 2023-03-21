@@ -1,14 +1,14 @@
-use num::complex::Complex;
 use libc::{c_double, c_float, c_void};
+use num::complex::Complex;
 
-pub trait Scalar<T,S>{
-    fn as_const(self)->T;
-    fn as_mut(self)->S;
+pub trait Scalar<T, S> {
+    fn as_const(self) -> T;
+    fn as_mut(self) -> S;
 }
 
 macro_rules! scalar_impl(
     ($t:ty, $c_type: ty)=>(
-        impl<'a>Scalar<$t, *mut $t> for &'a $t{
+        impl<'a> Scalar<$t, *mut $t> for &'a $t{
             #[inline]
             fn as_const(self)->$t{
                 *self as $c_type
@@ -28,7 +28,7 @@ macro_rules! scalar_impl(
 
 
             #[inline]
-            fn as_mut(self)->*mut c_void {
+            fn as_mut(self) -> *mut c_void {
                 self as *const _ as *mut c_void
             }
         }

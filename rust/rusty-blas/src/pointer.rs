@@ -6,7 +6,7 @@ pub trait CPtr<T>{
 }
 
 macro_rules! c_ptr_impl(
-    ($t:ty,$c_type: ty)=>(
+    ($t: ty, $c_type: ty)=>(
         impl CPtr<*const $c_type> for *const $t{
             #[inline]
             fn as_c_ptr(self)-> *const $c_type{

@@ -17,7 +17,6 @@ mod scalar;
 pub mod attribute;
 pub mod default;
 pub mod vector;
-pub mod vector;
 pub mod matrix_vector;
 pub mod matrix;
 pub mod math;

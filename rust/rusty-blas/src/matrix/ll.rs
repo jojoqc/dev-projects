@@ -1,5 +1,5 @@
 pub mod cblas_s {
-    use attribute::{Diagonal, Order, Side, Symmetry, Transpose};
+    use crate::attribute::{Diagonal, Order, Side, Symmetry, Transpose};
     use libc::{c_float, c_int};
 
     pub use self::cblas_sgemm as gemm;

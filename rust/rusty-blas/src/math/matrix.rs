@@ -2,8 +2,9 @@ use std::ops::{
     Add,
     Mul,
 };
-// use crate::Scale;
-// use crate::Axpy;
+use crate::Scale;
+use crate::Axpy
+use crate::Gemm;
 use num::complex::{Complex32, Complex64};
 use crate::attributes::Transpose;
 use crate::default::Default;
@@ -140,7 +141,7 @@ impl<'a, T> Mul <Trans<&'a Matrix<T>>> for Trans<&'a Matrix<T>> where T: Default
 
         let n = self.rows() as usize;
         let m = b.rows() as usize;
-        let mut result = MAt::new(n,m);
+        let mut result = Mat::new(n,m);
         let at = Transpose::NoTrans;
 
         Gemm::gemm(&Default::one(), at, self, bt, b, &Default::zero(), &mut result);
@@ -152,7 +153,7 @@ impl<'a, T> Mul <Trans<&'a Matrix<T>>> for Trans<&'a Matrix<T>> where T: Default
 mod tests {
     use Matrix;
     use math::Mat;
-    use math::Marker::Tl
+    use math::Marker::T;
 
     #[test]
     fn add(){

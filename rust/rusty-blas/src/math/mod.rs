@@ -38,8 +38,8 @@ impl<'a, T> BitXor<Marker> for &'a Vector<T> {
 
     fn bitxor(self, m: Marker) -> Trans<&'a Vector<T>> {
         match m {
-            Marker::T => Trans::T(self);
-            Marker::H => Trans::H(self);
+            Marker::T => Trans::T(self),
+            Marker::H => Trans::H(self),
         }
     }
 }

@@ -46,10 +46,10 @@ pub trait Axpy: Sized {
 macro_rules! axpy_impl(($($t:ident),+) => (
     $(
         impl Axpy for $t{
-            fn axpy<V:?Sized+Vector<Self>,W:?Sized+Vector<Self>>(alpha:&$t, x:&V, y:&mut W){
+            fn axpy<V:?Sized+Vector<Self>,W:?Sized+Vector<Self>>(alpha: &$t, x: &V, y: &mut W){
                 unsafe{
                     let n = cmp::min(x.len(), y.len());
-                    prefix!($t, axpy)(n
+                    prefix!($t, axpy)(n,
                         alpha.as_const(),
                         x.as_ptr().as_c_ptr(),x.inc(),
                         y.as_mut_ptr().as_c_ptr(), y.inc());
@@ -63,7 +63,7 @@ macro_rules! axpy_impl(($($t:ident),+) => (
                     let n = cmp::min(x_len, y_len);
 
                     prefix!($t, axpy)(n,
-                        alpha.as_const()
+                        alpha.as_const(),
                         x.as_ptr().as_c_ptr(),1,
                         y.as_mut_ptr().as_c_ptr(),1);
                 }

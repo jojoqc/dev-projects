@@ -21,7 +21,7 @@ pub trait Gemm: Sized {
 macro_rules! gemm_impl(($($t: ident), +) =>(
     $(
         impl Gemm for $t {
-            fn gemm(alpha: &$t, at: Transpose, a: &Matrix<$t>, bt: Transpose, b &Matrix<$t>, beta: &$t, c: &mut Matrix<$t>){
+            fn gemm(alpha: &$t, at: Transpose, a: &Matrix<$t>, bt: Transpose, b: &Matrix<$t>, beta: &$t, c: &mut Matrix<$t>){
                 unsafe{
                     let (m,k) = match at {
                         Transpose::NoTrans => (a.rows(), a.cols()),

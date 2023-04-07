@@ -3,7 +3,7 @@
 use libc::c_int;
 use num::complex::{Complex32, Complex64};
 use num::traits::NumCast;
-use vector::ops::{Asum, Axpy, Copy, Dot, Iamax, Nrm2, Scal};
+use crate::vector::ops::{Asum, Axpy, Copy, Dot, Iamax, Nrm2, Scal};
 
 pub mod ll;
 pub mod ops;

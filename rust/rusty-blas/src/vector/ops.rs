@@ -2,10 +2,11 @@ use default::Default;
 use matrix::Matrix;
 use num::complex::{Complex, Complex32, Complex64};
 use point::CPtr;
-use scalar::Scalar;
+use crate::scalar::Scalar;
 use std::cmp;
 use vector::ll::*;
 use vector::Vector;
+//use crate::Scale;
 
 pub trait Copy: Size {
     fn copy<V: ?Sized + Vector<Self>, W: ?Size + Vector<Self>>(src: &V, dst: &mut W);

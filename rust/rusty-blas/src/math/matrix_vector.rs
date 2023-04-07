@@ -1,11 +1,11 @@
-use attributes::Transpose;
-use default::Default;
-use math::Mat;
-use math::Trans;
-use matrix::Matrix;
-use matrix_vector::ops::*;
+use crate::attributes::Transpose;
+use crate::default::Default;
+use crate::math::Mat;
+use crate::math::Trans;
+use crate::matrix::Matrix;
+use crate::matrix_vector::ops::*;
 use std::ops::Mul;
-use vector::Vector;
+use crate::vector::Vector;
 
 impl<'a, T> Mul<&'a Vector<T>> for &'a Matrix<T>
 where

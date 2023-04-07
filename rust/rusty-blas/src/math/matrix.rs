@@ -3,7 +3,7 @@ use std::ops::{
     Mul,
 };
 use crate::Scale;
-use crate::Axpy
+use crate::Axpy;
 use crate::Gemm;
 use num::complex::{Complex32, Complex64};
 use crate::attributes::Transpose;

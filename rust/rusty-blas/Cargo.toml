@@ -1,18 +1,18 @@
 [package]
-name = "old-rusty-computer"
+name = "orc"
 version = "0.0.1"
-description = "BLAS library"
+description = "Rust blas library, Old Rusty Computer"
 homepage = "https://github.com/jojoqc/dev-projects"
 repository = "https://github.com/jojoqc/dev-projects/tree/main/rust/rusty-blas"
 documentation = ""
 readme = "README.md"
 edition = "2021"
 keywords = ["BLAS","RUST","AoS","SoA","AoSoA"]
-license = "GPLv3"
+license = "MIT"
 build = "build.rs"
 
 
 [dependencies]
 #simd = "0.2.4"
 libc = "0.2"
-num = "0.4.0"
+num = "0.4.0" 

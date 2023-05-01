@@ -1,16 +1,15 @@
-use default::Default;
-use matrix::Matrix;
-use num::complex::{Complex, Complex32, Complex64};
-use point::CPtr;
+use crate::default::Default;
+use crate::matrix::Matrix;
+use crate::pointer::CPtr;
 use crate::scalar::Scalar;
+use crate::vector::ll::*;
+use crate::vector::Vector;
+use num::complex::{Complex, Complex32, Complex64};
 use std::cmp;
-use vector::ll::*;
-use vector::Vector;
-//use crate::Scale;
 
-pub trait Copy: Size {
-    fn copy<V: ?Sized + Vector<Self>, W: ?Size + Vector<Self>>(src: &V, dst: &mut W);
-    fn copy_mat(src: &Matrix<Self>, dst: &mut Matrix<Self>);
+pub trait Copy: Sized {
+    fn copy<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(src: &V, dst: &mut W);
+    fn copy_mat(src: &dyn Matrix<Self>, dst: &mut dyn Matrix<Self>);
 }
 
 macro_rules! copy_impl(($($t: ident), +) => (
@@ -20,16 +19,16 @@ macro_rules! copy_impl(($($t: ident), +) => (
                 unsafe{
                     prefix!($t, copy)(dst.len(),
                         src.as_ptr().as_c_ptr(), src.inc(),
-                        dst.as_ptr().as_c_ptr(), dst.inc());
+                        dst.as_mut_ptr().as_c_ptr(), dst.inc());
                 }
             }
 
-            fn copy_mat(src: &Matrix<Self>, dst: &mut Matrix<Self>){
+            fn copy_mat(src: &dyn Matrix<Self>, dst: &mut dyn Matrix<Self>){
                 let len = dst.rows() * dst.cols();
                 unsafe{
-                    prefix($t, copy)(
-                        src.as_ptr().as_c_ptr(), 1,
-                        dst.as_mut_ptr().as_c_ptr(),1);
+                    prefix!($t, copy)(len,
+                        src.as_ptr().as_c_ptr(), 1.try_into().unwrap(),
+                        dst.as_mut_ptr().as_c_ptr(),1.try_into().unwrap() );
                 }
             }
         }
@@ -41,7 +40,7 @@ copy_impl!(f32, f64, Complex32, Complex64);
 // Computes `a * x + y` and stores the result in `y`.
 pub trait Axpy: Sized {
     fn axpy<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(alpha: &Self, x: &V, y: &mut W);
-    fn axpy_mat(alpha: &Self, x: &Matrix<Self>, y: &mut Matrix<Self>);
+    fn axpy_mat(alpha: &Self, x: &dyn Matrix<Self>, y: &mut dyn Matrix<Self>);
 }
 
 macro_rules! axpy_impl(($($t:ident),+) => (
@@ -57,7 +56,7 @@ macro_rules! axpy_impl(($($t:ident),+) => (
                 }
             }
 
-            fn axpy_mat(alpha:&$t, x: &Matrix<$t>, y:&mut Matrix<$t>){
+            fn axpy_mat(alpha:&$t, x: &dyn Matrix<$t>, y:&mut dyn Matrix<$t>){
                 unsafe{
                     let x_len = x.rows() * x.cols();
                     let y_len = y.rows() * y.cols();
@@ -77,8 +76,8 @@ axpy_impl!(f32, f64, Complex32, Complex64);
 
 #[cfg(test)]
 mod axpy_test {
+    use crate::vector::ops::Axpy;
     use num::complex::Complex;
-    use vector::ops::Axpy;
 
     #[test]
     fn real() {
@@ -111,9 +110,9 @@ mod axpy_test {
 }
 
 // Computes `a * x` and stores the result in `x`.
-pub trait Scale: Sized {
+pub trait Scal: Sized {
     fn scal<V: ?Sized + Vector<Self>>(alpha: &Self, x: &mut V);
-    fn scal_mat(alpha: &Self, x: &mut Matrix<Self>);
+    fn scal_mat(alpha: &Self, x: &mut dyn Matrix<Self>);
 }
 
 macro_rules! scal_impl(($($t: ident),+)=>(
@@ -127,6 +126,16 @@ macro_rules! scal_impl(($($t: ident),+)=>(
                         x.as_mut_ptr().as_c_ptr(),1);
                 }
             }
+
+
+            fn scal_mat(alpha: &$t, x: &mut dyn Matrix<$t>){
+                unsafe {
+                    prefix!($t, scal)(x.rows() * x.cols(),
+                        alpha.as_const(),
+                        x.as_mut_ptr().as_c_ptr(),1);
+                }
+            }
+
         }
     )+
 ));
@@ -134,8 +143,8 @@ scal_impl!(f32, f64, Complex32, Complex64);
 
 #[cfg(test)]
 mod scal_tests {
+    use crate::vector::ops::Scal;
     use num::complex::Complex;
-    use vector::ops::Scal;
 
     #[test]
     fn real() {
@@ -148,7 +157,7 @@ mod scal_tests {
     #[test]
     fn slice() {
         let mut x = vec![1f32, -2f32, 3f32, 4f32];
-        Scal::scal(&-2f32, &mut [..3]);
+        Scal::scal(&-2f32, &mut x[..3]);
         assert_eq!(x, vec![-2f32, 4f32, -6f32, 4f32]);
     }
 
@@ -170,7 +179,7 @@ mod scal_tests {
 // Swaps the content of `x` and `y`.
 pub trait Swap: Sized {
     // If they are different lengths, the shorter length is used.
-    fn swap<V: ?Sized + Vector<Self>, W: ?Sized + Vector>(x: &mut V, y: &mut W);
+    fn swap<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(x: &mut V, y: &mut W);
 }
 
 macro_rules! swap_impl(($($t: ident),+) => (
@@ -189,12 +198,12 @@ macro_rules! swap_impl(($($t: ident),+) => (
     )+
 ));
 
-swap_imp!(f32, f64, Complex32, Complex64);
+swap_impl!(f32, f64, Complex32, Complex64);
 
 #[cfg(test)]
 mod swap_tests {
+    use crate::vector::ops::Swap;
     use num::complex::Complex;
-    use vector::ops::Swap;
 
     #[test]
     fn real() {
@@ -277,8 +286,8 @@ complex_dot_impl!(Complex32, Complex64);
 
 #[cfg(test)]
 mod dot_tests {
+    use crate::vector::ops::Dot;
     use num::complex::Complex;
-    use vector::ops::Dot;
 
     #[test]
     fn real() {
@@ -339,8 +348,8 @@ dotc_impl!(Complex32, Complex64);
 
 #[cfg(test)]
 mod dotc_tests {
+    use crate::vector::ops::Dotc;
     use num::complex::Complex;
-    use vector::ops::Dotc;
 
     #[test]
     fn complex_conj() {
@@ -354,8 +363,8 @@ mod dotc_tests {
 
 #[cfg(test)]
 mod dotc_test {
+    use crate::vector::ops::Dotc;
     use num::complex::Complex;
-    use vector::ops::Dotc;
 
     #[test]
     fn complex_conj() {
@@ -401,7 +410,7 @@ macro_rules! complex_norm_impl(
                         x.as_ptr().as_c_ptr(), x.inc())
                 };
 
-                Complex { im: 0.0, re: re }
+                Complex { im: 0.0, re }
             }
         }
     );
@@ -416,8 +425,8 @@ complex_norm_impl!(Nrm2, nrm2, Complex64, cblas_d::znrm2);
 
 #[cfg(test)]
 mod asum_tests {
+    use crate::vector::ops::Asum;
     use num::complex::Complex;
-    use vector::ops::Asum;
 
     #[test]
     fn real() {
@@ -446,8 +455,8 @@ mod asum_tests {
 
 #[cfg(test)]
 mod nrm2_tests {
+    use crate::vector::ops::Nrm2;
     use num::complex::Complex;
-    use vector::ops::Nrm2;
 
     #[test]
     fn real() {
@@ -503,8 +512,8 @@ iamax_impl!(Complex64, cblas_i::zamax);
 
 #[cfg(test)]
 mod iamax_tests {
+    use crate::vector::ops::Iamax;
     use num::complex::Complex;
-    use vector::ops::Iamax;
 
     #[test]
     fn real() {
@@ -562,7 +571,7 @@ rot_impl!(f32, f64);
 
 #[cfg(test)]
 mod rot_tests {
-    use vector::ops::{Rot, Scal};
+    use crate::vector::ops::{Rot, Scal};
 
     #[test]
     fn real() {

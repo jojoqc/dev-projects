@@ -1,21 +1,18 @@
-use crate::math::Trans;
-use crate::{Axpy, Vector};
-use default::Default;
-use math::Trans;
-use num::complex::{Complex32, Complex64};
-use std::default;
-use std::ffi::FromVecWithNulError;
 use std::ops::{Add, Mul};
-use vector::ops::*;
-use vector::Vector;
 
-impl<'a, T> Add for &'a Vector<T>
+use crate::default::Default;
+use crate::math::Trans;
+use crate::vector::ops::*;
+use crate::vector::Vector;
+use num::complex::{Complex32, Complex64};
+
+impl<'a, T> Add for &'a dyn Vector<T>
 where
     T: Axpy + Copy + Default,
 {
     type Output = Vec<T>;
 
-    fn add(self, x: &Vector<T>) -> Vec<T> {
+    fn add(self, x: &dyn Vector<T>) -> Vec<T> {
         let mut result: Vec<_> = self.into();
         let scale = Default::one();
         Axpy::axpy(&scale, x, &mut result);
@@ -23,13 +20,13 @@ where
     }
 }
 
-impl<'a, T> Mul<&'a Vector<T>> for Trans<&'a Vector<T>>
+impl<'a, T> Mul<&'a dyn Vector<T>> for Trans<&'a dyn Vector<T>>
 where
     T: Sized + Copy + Dot + Dotc,
 {
     type Output = T;
 
-    fn mul(self, x: &Vector<T>) -> T {
+    fn mul(self, x: &dyn Vector<T>) -> T {
         match self {
             Trans::T(v) => Dot::dot(v, x),
             Trans::H(v) => Dotc::dotc(v, x),
@@ -37,7 +34,7 @@ where
     }
 }
 
-impl<'a, T> Mul<T> for &'a Vector<T>
+impl<'a, T> Mul<T> for &'a dyn Vector<T>
 where
     T: Sized + Copy + Scal,
 {
@@ -52,10 +49,10 @@ where
 
 macro_rules! left_scale(($($t: ident), +) => (
     $(
-        impl<'a> Mul<&'a Vector<$t>> for $t{
+        impl<'a> Mul<&'a dyn Vector<$t>> for $t{
             type Output = Vec<$t>;
 
-            fn mul(self, x:&Vector<$t>) -> Vec<$t>{
+            fn mul(self, x: &dyn Vector<$t>) -> Vec<$t>{
                 let mut result: Vec<_> = x.into();
                 Scal::scal(&self, &mut result);
                 result
@@ -68,17 +65,16 @@ left_scale!(f32, f64, Complex32, Complex64);
 
 #[cfg(test)]
 mod tests {
+    use crate::math::Marker::H;
     use crate::Vector;
-    use math::Marker::{H, T};
     use num::Complex;
-    use Vector;
 
     #[test]
     fn add() {
         let x = vec![1f32, 2f32];
         let y = vec![3f32, 4f32];
 
-        let z = &x as &Vector<_> + &y;
+        let z = &x as &(dyn Vector<_> + y);
         assert_eq!(&z, &vec![4f32, 6f32]);
     }
 
@@ -88,7 +84,7 @@ mod tests {
         let y = vec![Complex::new(1f32, 2f32), Complex::new(1f32, 3f32)];
 
         let dot = {
-            let z = &x as &Vector<_>;
+            let z = &x as &dyn Vector<_>;
             (z ^ H) * &y
         };
     }
@@ -96,7 +92,7 @@ mod tests {
     #[test]
     fn scale() {
         let x = vec![1f32, 2f32];
-        let xr = &x as &Vector<_>;
+        let xr = &x as &dyn Vector<_>;
 
         let y = xr * 3.0;
         let z = 3.0 * xr;

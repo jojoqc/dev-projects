@@ -1,9 +1,9 @@
 #![macro_use]
 
-use crate::num::traits::NumCast;
 use crate::vector::ops::Copy;
 use crate::Matrix;
-use crate::Vector;
+//use crate::Vector;
+use num::traits::NumCast;
 use std::fmt;
 use std::iter::repeat;
 use std::ops::Index;
@@ -14,7 +14,7 @@ pub struct Mat<T> {
     rows: usize,
     cols: usize,
     // change vector type data to SIMD or use LLVM intrinsics
-    data: vec<T>,
+    data: Vec<T>,
 }
 
 impl<T> Mat<T> {
@@ -28,7 +28,7 @@ impl<T> Mat<T> {
         Mat {
             rows: n,
             cols: m,
-            data: data,
+            data,
         }
     }
 
@@ -109,16 +109,16 @@ impl<T> Matrix<T> for Mat<T> {
         self.data[..].as_ptr()
     }
 
-    fn as_ptr(&self) -> *mut T {
+    fn as_mut_ptr(&mut self) -> *mut T {
         (&mut self.data[..]).as_mut_ptr()
     }
 }
 
-impl<'a, T> From<&'a Matrix<T>> for Mat<T>
+impl<'a, T> From<&'a dyn Matrix<T>> for Mat<T>
 where
     T: Copy,
 {
-    fn from(a: &Matrix<T>) -> Mat<T> {
+    fn from(a: &dyn Matrix<T>) -> Mat<T> {
         let n = a.rows() as usize;
         let m = a.cols() as usize;
         let len = n * m;
@@ -156,7 +156,7 @@ macro_rules! mat(
 
         unsafe {
             _temp.set_rows(rows);
-            _temp.set_cols(cols);
+            _temp.set_cols(_cols);
         }
         _temp
     });
@@ -165,12 +165,12 @@ macro_rules! mat(
 #[cfg(test)]
 
 mod tests {
-    use math::Mat;
+    use crate::math::Mat;
 
     #[test]
     fn index() {
         let a = mat![1f32, 2f32];
-        assert_eq!(1.0, a[0[0]]);
+        assert_eq!(1.0, a[0][0]);
         assert_eq!(2.0, a[0][1]);
 
         let b = mat![1f32; 2f32];

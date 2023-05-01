@@ -3,25 +3,25 @@ use crate::matrix::ll::*;
 use crate::matrix::Matrix;
 use crate::pointer::CPtr;
 use crate::scalar::Scalar;
-use crate::vector::Vector;
+//use crate::vector::Vector;
 use num::complex::{Complex, Complex32, Complex64};
 
 pub trait Gemm: Sized {
     fn gemm(
         alpha: &Self,
         at: Transpose,
-        a: &Matrix<Self>,
+        a: &dyn Matrix<Self>,
         bt: Transpose,
-        b: &Matrix<Self>,
+        b: &dyn Matrix<Self>,
         beta: &Self,
-        c: &mut Matrix<Self>,
+        c: &mut dyn Matrix<Self>,
     );
 }
 
 macro_rules! gemm_impl(($($t: ident), +) =>(
     $(
         impl Gemm for $t {
-            fn gemm(alpha: &$t, at: Transpose, a: &Matrix<$t>, bt: Transpose, b: &Matrix<$t>, beta: &$t, c: &mut Matrix<$t>){
+            fn gemm(alpha: &$t, at: Transpose, a: &dyn Matrix<$t>, bt: Transpose, b: &dyn Matrix<$t>, beta: &$t, c: &mut dyn Matrix<$t>){
                 unsafe{
                     let (m,k) = match at {
                         Transpose::NoTrans => (a.rows(), a.cols()),
@@ -34,7 +34,7 @@ macro_rules! gemm_impl(($($t: ident), +) =>(
                     prefix!($t, gemm)(a.order(),
                         at, bt,
                         m,n,k,
-                        alpha.as_cost(),
+                        alpha.as_const(),
                         a.as_ptr().as_c_ptr(), a.lead_dim(),
                         b.as_ptr().as_c_ptr(), b.lead_dim(),
                         beta.as_const(),
@@ -84,10 +84,10 @@ pub trait Symm: Sized {
         side: Side,
         symmetry: Symmetry,
         alpha: &Self,
-        a: &Matrix<Self>,
-        b: &Matrix<Self>,
+        a: &dyn Matrix<Self>,
+        b: &dyn Matrix<Self>,
         beta: &Self,
-        c: &mut Matrix<Self>,
+        c: &mut dyn Matrix<Self>,
     );
 }
 
@@ -96,17 +96,17 @@ pub trait Hemm: Sized {
         side: Side,
         symmetry: Symmetry,
         alpha: &Self,
-        a: &Matrix<Self>,
-        b: &Matrix<Self>,
+        a: &dyn Matrix<Self>,
+        b: &dyn Matrix<Self>,
         beta: &Self,
-        c: &mut Matrix<Self>,
+        c: &mut dyn Matrix<Self>,
     );
 }
 
 macro_rules! symm_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) => (
     $(
         impl $trait_name for $t {
-            fn $fn_name(side: Side, symmetry: Symmetry, alpha: &$t, a: &Matrix<$t>, b: &Matrix<$t>, beta: &$t, c: &mut Matrix<$t>) {
+            fn $fn_name(side: Side, symmetry: Symmetry, alpha: &$t, a: &dyn Matrix<$t>, b: &dyn Matrix<$t>, beta: &$t, c: &mut dyn Matrix<$t>) {
                 unsafe {
                     prefix!($t, $fn_name)(a.order(),
                         side, symmetry,
@@ -132,8 +132,8 @@ pub trait Trmm: Sized {
         trans: Transpose,
         diag: Diagonal,
         alpha: &Self,
-        a: &Matrix<Self>,
-        b: &mut Matrix<Self>,
+        a: &dyn Matrix<Self>,
+        b: &mut dyn Matrix<Self>,
     );
 }
 
@@ -144,15 +144,15 @@ pub trait Trsm: Sized {
         trans: Transpose,
         diag: Diagonal,
         alpha: &Self,
-        a: &Matrix<Self>,
-        b: &mut Matrix<Self>,
+        a: &dyn Matrix<Self>,
+        b: &mut dyn Matrix<Self>,
     );
 }
 
 macro_rules! trmm_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) => (
     $(
         impl $trait_name for $t {
-            fn $fn_name(side: Side, symmetry: Symmetry, trans: Transpose, diag: Diagonal, alpha: &$t, a: &Matrix<$t>, b: &mut Matrix<$t>) {
+            fn $fn_name(side: Side, symmetry: Symmetry, trans: Transpose, diag: Diagonal, alpha: &$t, a: &dyn Matrix<$t>, b: &mut dyn Matrix<$t>) {
                 unsafe {
                     prefix!($t, $fn_name)(a.order(),
                         side, symmetry, trans, diag,
@@ -174,9 +174,9 @@ pub trait Herk: Sized {
         symmetry: Symmetry,
         trans: Transpose,
         alpha: &Self,
-        a: &Matrix<Complex<Self>>,
+        a: &dyn Matrix<Complex<Self>>,
         beta: &Self,
-        c: &mut Matrix<Complex<Self>>,
+        c: &mut dyn Matrix<Complex<Self>>,
     );
 }
 
@@ -185,17 +185,17 @@ pub trait Her2k: Sized {
         symmetry: Symmetry,
         trans: Transpose,
         alpha: Complex<Self>,
-        a: &Matrix<Complex<Self>>,
-        b: &Matrix<Complex<Self>>,
+        a: &dyn Matrix<Complex<Self>>,
+        b: &dyn Matrix<Complex<Self>>,
         beta: &Self,
-        c: &mut Matrix<Complex<Self>>,
+        c: &mut dyn Matrix<Complex<Self>>,
     );
 }
 
 macro_rules! herk_impl(($($t: ident), +) => (
     $(
         impl Herk for $t {
-            fn herk(symmetry: Symmetry, trans: Transpose, alpha: &$t, a: &Matrix<Complex<$t>>, beta: &$t, c: &mut Matrix<Complex<$t>>) {
+            fn herk(symmetry: Symmetry, trans: Transpose, alpha: &$t, a: &dyn Matrix<Complex<$t>>, beta: &$t, c: &mut dyn Matrix<Complex<$t>>) {
                 unsafe {
                     prefix!(Complex<$t>, herk)(a.order(),
                         symmetry, trans,
@@ -209,7 +209,7 @@ macro_rules! herk_impl(($($t: ident), +) => (
         }
 
         impl Her2k for $t {
-            fn her2k(symmetry: Symmetry, trans: Transpose, alpha: Complex<$t>, a: &Matrix<Complex<$t>>, b: &Matrix<Complex<$t>>, beta: &$t, c: &mut Matrix<Complex<$t>>) {
+            fn her2k(symmetry: Symmetry, trans: Transpose, alpha: Complex<$t>, a: &dyn Matrix<Complex<$t>>, b: &dyn Matrix<Complex<$t>>, beta: &$t, c: &mut dyn Matrix<Complex<$t>>) {
                 unsafe {
                     prefix!(Complex<$t>, her2k)(a.order(),
                         symmetry, trans,
@@ -232,9 +232,9 @@ pub trait Syrk: Sized {
         symmetry: Symmetry,
         trans: Transpose,
         alpha: &Self,
-        a: &Matrix<Self>,
+        a: &dyn Matrix<Self>,
         beta: &Self,
-        c: &mut Matrix<Self>,
+        c: &mut dyn Matrix<Self>,
     );
 }
 
@@ -243,17 +243,17 @@ pub trait Syr2k: Sized {
         symmetry: Symmetry,
         trans: Transpose,
         alpha: &Self,
-        a: &Matrix<Self>,
-        b: &Matrix<Self>,
+        a: &dyn Matrix<Self>,
+        b: &dyn Matrix<Self>,
         beta: &Self,
-        c: &mut Matrix<Self>,
+        c: &mut dyn Matrix<Self>,
     );
 }
 
 macro_rules! syrk_impl(($($t: ident), +) => (
     $(
         impl Syrk for $t {
-            fn syrk(symmetry: Symmetry, trans: Transpose, alpha: &$t, a: &Matrix<$t>, beta: &$t, c: &mut Matrix<$t>) {
+            fn syrk(symmetry: Symmetry, trans: Transpose, alpha: &$t, a: &dyn Matrix<$t>, beta: &$t, c: &mut dyn Matrix<$t>) {
                 unsafe {
                     prefix!($t, syrk)(a.order(),
                         symmetry, trans,
@@ -267,7 +267,7 @@ macro_rules! syrk_impl(($($t: ident), +) => (
         }
 
         impl Syr2k for $t {
-            fn syr2k(symmetry: Symmetry, trans: Transpose, alpha: &$t, a: &Matrix<$t>, b: &Matrix<$t>, beta: &$t, c: &mut Matrix<$t>) {
+            fn syr2k(symmetry: Symmetry, trans: Transpose, alpha: &$t, a: &dyn Matrix<$t>, b: &dyn Matrix<$t>, beta: &$t, c: &mut dyn Matrix<$t>) {
                 unsafe {
                     prefix!($t, syr2k)(a.order(),
                         symmetry, trans,

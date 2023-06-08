@@ -17,5 +17,5 @@
     <li><a href="https://github.com/jojoqc/dev-projects/tree/main/rust/webapi">9) Iron framework webAPI</a></li>
     <li><a href="https://github.com/jojoqc/dev-projects/tree/main/rust/bevy-game">10) Bevy practice</a></li>
     <li><a href="https://github.com/jojoqc/dev-projects/tree/main/rust/embedded-rust">11) Embedded rust</a></li>
-    <li><a href="https://github.com/jojoqc/dev-projects/tree/main/rust/lsm-storage">12) lsm storage</a></li>
+    <li><a href="https://github.com/jojoqc/dev-projects/tree/main/rust/finance-forging">12)Finance Forging</a></li>
 </ul>

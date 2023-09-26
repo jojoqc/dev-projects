@@ -1,0 +1,15 @@
+[package]
+name = "fsm"
+version = "0.0.1"
+description = "Old Rusty Machine"
+homepage = "https://github.com/jojoqc/dev-projects"
+repository = "https://github.com/jojoqc/dev-projects/tree/main/rust/fsm"
+documentation = ""
+readme = "README.md"
+edition = "2021"
+keywords = ["FSM","DFA","RUST","AUTOMATON"]
+license = "MIT"
+# build = "build.rs"
+
+
+[dependencies]

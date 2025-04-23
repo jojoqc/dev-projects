@@ -10,7 +10,7 @@ La documentacion de la API se puede encontrar en la siguiente direccion: [http:/
 
 ## Instalacion
 
-Para instalar la API, se necesita tener instalado Python 3.8 o superior. Luego, se puede instalar la API con el siguiente comando: `pip install "fastapi[all]"`
+Para utilizar la API, se ejecuta el siguiente comando: `fastapi dev src/main.py`. Es necesario tener Python 3.9 o superior instalado previamente.
 
 ## Desarrollo
 
